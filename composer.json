@@ -1,0 +1,53 @@
+{
+    "name": "pj8/sentry-module",
+    "type": "library",
+    "description": "BEAR.Sunday integration for Sentry (https://docs.sentry.io/platforms/php/)",
+    "keywords": ["BEAR.Sunday", "Ray.Di","sentry"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Project8 Inc"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "bear/package": "^1.10",
+        "bear/resource": "^1.15",
+        "ray/aop": "^2.10",
+        "ray/di": "^2.12",
+        "sentry/sdk": "^3.1",
+        "sentry/sentry": "^3.3"
+    },
+    "require-dev": {
+        "bear/qatools": "^1.9",
+        "phpunit/phpunit": "^9.5",
+        "roave/security-advisories": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pj8\\SentryModule\\": ["src/"]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pj8\\SentryModule\\": ["tests/"]
+        }
+    },
+    "scripts" :{
+        "test": ["./vendor/bin/phpunit"],
+        "tests": ["@cs", "@test", "@sa"],
+        "cs": ["phpcs --standard=./phpcs.xml src tests"],
+        "cs-fix": ["./vendor/bin/phpcbf src tests"],
+        "clean": ["./vendor/bin/phpstan clear-result-cache", "./vendor/bin/psalm --clear-cache"],
+        "sa": [
+            "phpstan analyse -c phpstan.neon",
+            "psalm --show-info=true",
+            "phpmd --exclude src/Annotation src text ./phpmd.xml"
+        ],
+        "phpmd": ["./vendor/bin/phpmd src text ./phpmd.xml"],
+        "build": ["@cs", "@sa"]
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
