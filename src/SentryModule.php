@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pj8\SentryModule;
 
+use BEAR\Resource\Annotation\Monitorable;
 use BEAR\Resource\ResourceObject;
 use InvalidArgumentException;
 use Pj8\SentryModule\Foundation\Aop\Matcher\IsHttpMethodMatcher;
@@ -57,6 +58,11 @@ class SentryModule extends AbstractModule
         $this->bindInterceptor(
             $this->matcher->subclassesOf(ResourceObject::class),
             new IsHttpMethodMatcher(),
+            [MonitorInterceptorInteterface::class]
+        );
+        $this->bindInterceptor(
+            $this->matcher->any(),
+            $this->matcher->annotatedWith(Monitorable::class),
             [MonitorInterceptorInteterface::class]
         );
     }
