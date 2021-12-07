@@ -57,7 +57,7 @@ class SentryModule extends AbstractModule
         $this->bindInterceptor(
             $this->matcher->subclassesOf(ResourceObject::class),
             new IsHttpMethodMatcher(),
-            [MonitorInterceptor::class]
+            [MonitorInterceptorInteterface::class]
         );
     }
 

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Pj8\SentryModule;
 
-use Ray\Aop\MethodInterceptor;
 use Ray\Aop\MethodInvocation;
 
-final class MonitorInterceptor implements MethodInterceptor
+final class MonitorInterceptor implements MonitorInterceptorInteterface
 {
     private SpanInterface $span;
     private SpanContextFactoryInterface $factory;
@@ -19,9 +18,7 @@ final class MonitorInterceptor implements MethodInterceptor
     }
 
     /**
-     * @return mixed
-     *
-     * @see "Distributed Tracing" https://docs.sentry.io/product/sentry-basics/tracing/distributed-tracing/
+     * {@inheritDoc}
      */
     public function invoke(MethodInvocation $invocation)
     {
