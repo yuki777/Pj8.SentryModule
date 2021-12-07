@@ -8,6 +8,7 @@ use BEAR\Resource\ResourceObject;
 use InvalidArgumentException;
 use Pj8\SentryModule\Foundation\Aop\Matcher\IsHttpMethodMatcher;
 use Pj8\SentryModule\Transaction\CliTransaction;
+use Pj8\SentryModule\Transaction\Transaction;
 use Pj8\SentryModule\Transaction\TransactionInterface;
 use Pj8\SentryModule\Transaction\WebTransaction;
 use Pj8\SentryModule\TransactionName\CliTransactionName;
@@ -16,6 +17,7 @@ use Pj8\SentryModule\TransactionName\TransactionNameInterface;
 use Pj8\SentryModule\TransactionName\WebTransactionName;
 use Pj8\SentryModule\TransactionName\WebTransactionNameBuilder;
 use Ray\Di\AbstractModule;
+use Ray\Di\Scope;
 
 use function array_key_exists;
 
@@ -48,12 +50,14 @@ class SentryModule extends AbstractModule
         $this->bind(TransactionNameInterface::class)->annotatedWith('sentry-tr-cli-name')->to(CliTransactionName::class);
         $this->bind(TransactionInterface::class)->annotatedWith('sentry-transaction-web')->to(WebTransaction::class);
         $this->bind(TransactionInterface::class)->annotatedWith('sentry-transaction-cli')->to(CliTransaction::class);
+        $this->bind(TransactionInterface::class)->to(Transaction::class)->in(Scope::SINGLETON);
         $this->bind(SpanClient::class);
+        $this->bind(SpanContextFactoryInterface::class)->to(SpanContextFactory::class);
+        $this->bind(SpanInterface::class)->to(Span::class);
         $this->bindInterceptor(
             $this->matcher->subclassesOf(ResourceObject::class),
             new IsHttpMethodMatcher(),
-            // プロトタイプスコープでシングルトン
-            [PerformanceInterceptor::class]
+            [MonitorInterceptor::class]
         );
     }
 
