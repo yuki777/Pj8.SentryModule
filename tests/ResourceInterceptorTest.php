@@ -9,11 +9,6 @@ use Pj8\SentryModule\Exception\UnsupportedTypeException;
 use Ray\Aop\ReflectiveMethodInvocation;
 use Ray\Di\Injector;
 
-use function array_map;
-use function glob;
-
-use const GLOB_BRACE;
-
 class ResourceInterceptorTest extends TestCase
 {
     private ?Transaction $transaction;
@@ -36,8 +31,6 @@ class ResourceInterceptorTest extends TestCase
 
     public function testInvokeReturnAppResourceCaseAppResource(): void
     {
-        $this->cleanupFakeTmpDir();
-
         $injector = new Injector(new ResourceModule('FakeApplication'), __DIR__ . '/tmp');
 
         $resource = $injector->getInstance(ResourceInterface::class);
@@ -51,17 +44,6 @@ class ResourceInterceptorTest extends TestCase
         $this->assertSame($fakeAppRo, $fakeRoResult);
 
         $this->unsetTrace();
-        $this->cleanupFakeTmpDir();
-    }
-
-    private function cleanupFakeTmpDir(): void
-    {
-        $dirs = glob(__DIR__ . '/tmp/{*.txt,*.php}', GLOB_BRACE);
-        if (! $dirs) {
-            return;
-        }
-
-        array_map('unlink', $dirs);
     }
 
     private function createResourceTrace(): ResourceInterceptor
