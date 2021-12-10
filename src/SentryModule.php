@@ -42,6 +42,7 @@ class SentryModule extends AbstractModule
         $this->bind(SpanInterface::class)->to(Span::class);
         $this->bind(SpanContextFactoryInterface::class)->to(SpanContextFactory::class);
         $this->bind(ResourceSpanFactory::class);
+        $this->bind(ResourceTraceInterface::class)->to(ResourceTrace::class);
         $this->bindInterceptor(
             $this->matcher->subclassesOf(ResourceObject::class),
             new IsHttpMethodMatcher(),

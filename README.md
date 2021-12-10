@@ -1,55 +1,30 @@
 # Pj8.SentryModule
 
-BEAR.Sunday integration for [Sentry](https://docs.sentry.io/platforms/php/).
+[Sentry](https://docs.sentry.io/platforms/php/) を [BEAR.Sunday](http://bearsunday.github.io/) アプリケーションで使うためのスターターキットモジュール
 
 ![Continuous Integration](https://github.com/pj8/pj8.sentrymodule/workflows/Continuous%20Integration/badge.svg)
 
-[README_ja](./README_ja.md)
+## 機能
 
-## Feature
+* BEAR.Sunday アプリケーションでの Sentry のセットアップ、設定
+* Sentry のエラー監視、パフォーマンスモニタリング機能に対応
 
-- A fast Sentry setup and easy configuration in your BEAR.Sunday app
-- Performance monitoring
+## インストール
 
-## Installation
-
-To install the SDK you will need to be using [Composer]([https://getcomposer.org/) in your project.
+[Composer]([https://getcomposer.org/) でプロジェクトにインストールします。
 
 ```bash
 composer require pj8/sentry-module
 ```
 
-### Step 2: Enable the module
+## Step 2: モジュールを利用可能にする
 
-Install `SentryModule` with the configuration of the SDK.
+モジュール `SentryModule` を [Sentry SDK](https://docs.sentry.io/platforms/php/configuration/) のオプション設定で初期化してインストールします。
 
-Example:
-```php
-use BEAR\Package\AbstractAppModule;
-use Pj8\SentryModule\SentryModule;
+### 設定とインストールの例:
 
-class AppModule extends AbstractAppModule
-{
-    protected function configure()
-    {
-        // ...
-        $this->install(new SentryModule(include $this->appMeta->appDir . '/var/conf/sentry.php'));
-    }
-}
-```
+- プロジェクトの開発環境用 [Sentry DSN](https://docs.sentry.io/quickstart/#configure-the-dsn) の値をプロジェクトの.env を設定
 
-Note that, the package will be enabled only when providing a DSN (see the next step "Configuration of the SDK").
-
-## Configuration of the SDK
-
-Add your [Sentry DSN](https://docs.sentry.io/quickstart/#configure-the-dsn) value of your project,
-Add it to `var/conf/sentry.php` .
-
-Keep in mind that leaving the `dsn` value empty (or undeclared) in other environments will effectively disable Sentry reporting.
-
-Example:
-
-.env in your project for local development environment only
 ```
 APP_ENV="local" # local|development|staging|production
 SENTRY_DSN="https://xxx@xxx.ingest.sentry.io/xxx"
@@ -57,73 +32,66 @@ SENTRY_SAMPLE_RATE=1.0
 SENTRY_SUNDAY_TRACES_RATE_DEFAULT=1.0
 ```
 
-var/conf/sentry.php
+- `var/conf/sentry.php` で利用設定
+
 ```php
 <?php
 
-use Pj8\SentryModule\TracesSampler;
+use Pj8\SentryModule\ExcludeSampler;
 
 // \Sentry\init の引数になるオプション配列
 return [
     'dsn' => getenv('SENTRY_DSN') ?: null,
     'environment' => getenv('APP_ENV') ?: 'unknown',
     // @see https://docs.sentry.io/platforms/php/configuration/options/#sample-rate
-    'sample_rate' => (float) getenv('SENTRY_SAMPLE_RATE'),
+    'sample_rate' => (float) getenv('SENTRY_ERROR_SAMPLE_RATE'),
+    // パフォーマンス計測サンプリングを固定値にする場合
+    // @see https://docs.sentry.io/platforms/php/configuration/options/#traces-sample-rate
+    //'traces_sample_rate' => (float) getenv('SENTRY_SAMPLE_RATE'),
+    // パフォーマンス計測サンプリングをPHPのコールバック関数で決める場合
     // @see https://docs.sentry.io/platforms/php/configuration/options/#traces-sampler
     'traces_sampler' => [
-        new TracesSampler(
-            (float) getenv('SENTRY_SUNDAY_TRACES_RATE_DEFAULT'),
-            // トレースしないトランザクション名の配列
-            ['healthcheck']
+        new ExcludeSampler(
+            (float) getenv('SENTRY_PERFORMANCE_SAMPLER_RATE'),
+            // パフォーマンス計測をしたくないトランザクション名パターンの配列
+            ['/healthcheck']
         ),
         'sample',
     ],
 ];
 ```
 
-BEAR Bootstrap Example:
+- モジュールをインストール
 
 ```php
-<?php
+use BEAR\Package\AbstractAppModule;
+use Pj8\SentryModule\SentryModule;
 
-use BEAR\Resource\ResourceObject;
-use BEAR\Sunday\Extension\Application\AppInterface;
-use MyVendor\MyProject\Injector;
-use MyVendor\MyProject\Module\App;
-use Pj8\SentryModule\Transaction\TransactionInterface;
-
-use function Sentry\captureException;
-
-return static function (string $context, array $globals, array $server): int {
-
-    $app = Injector::getInstance($context)->getInstance(AppInterface::class);
-    $request = $app->router->match($globals, $server);
-
-    try {
-        // [integration point 1]
-        /** @var TransactionFacade $sentry */
-        $sentry = Injector::getInstance($context)->getInstance(TransactionInterface::class, 'sentry-transaction-web');
-        $sentry->startTransaction();
-
-        $uri = parse_url($server['REQUEST_URI']);
-        $response = $app->resource->{$request->method}->uri($uri)($request->query);
-
-        // [integration point 2]
-        $sentry->finishTransaction();
-
-        /** @var ResourceObject $response */
-        $response->transfer($app->responder, $server);
-
-        return 0;
-    } catch (\Exception $e) {
-        // [integration point 3]
-        if (getenv('SENTRY_DSN')) {
-            captureException($e);
-        }
-
-        $app->error->handle($e, $request)->transfer();
-
-        return 1;
+class ProdModule extends AbstractAppModule
+{
+    protected function configure()
+    {
+        // ...
+        $this->install(new SentryModule(include $this->appMeta->appDir . '/var/conf/sentry.php'));
+        // Sentry のエラーキャプチャー機能を利用するための設定  ここから
+        $this->rename(ErrorInterface::class, 'original');
+        $this->bind(ErrorInterface::class)->to(SentryErrorHandler::class);
+        // Sentry のエラーキャプチャー機能を利用するための設定  ここまで
     }
-};
+}
 ```
+
+### 設定の注意事項
+
+`dsn` 値が空または未定義の場合、全環境で Sentry が無効化されます。
+ふだんの開発環境やテスト環境、CIビルド環境では Sentry へのイベント送信が不要であることがほとんどでしょうから無効化がのぞましいでしょう。
+不用意に有効化してしまうと料金プランのクオータを超過する恐れがあるので気をつけてください。
+
+### モジュールインストールの注意事項
+
+SentryModule は、Sentry のエラーキャプチャー機能のために`\BEAR\Sunday\Extension\Error\ErrorInterface` と `\BEAR\Sunday\Extension\Error\ThrowableHandlerInterface`に対する前処理をはさみこみます。
+
+プロジェクトで束縛確定されていたをエラーハンドラーをオリジナルインターフェイスとして保持し、
+前処理として Sentry のエラーキャプチャー処理を呼び出したらオリジナルインターフェイスに処理を委譲する処理フローです。
+
+たとえば、アプリケーションコンテキストが `prod-html-app` であれば、最優先である ProdModule 内にエラーハンドリングの束縛を書けばエラーキャプチャー機能を確実に利用することができます。デコレートする側のモジュール（ProdModule）にプロジェクト固有の束縛設定を書くとエラーキャプチャー機能が使えないので注意してください。

@@ -6,11 +6,13 @@ namespace FakeApplication\Resource\App;
 
 use BEAR\Resource\ResourceObject;
 
-class Bar extends ResourceObject
+class Aaa extends ResourceObject
 {
+    const RESULT = 'result by app Bar resource';
+
     public function onGet(): ResourceObject
     {
-        $this->body = 'result by app bar resource';
+        $this->body = self::RESULT;
 
         return $this;
     }

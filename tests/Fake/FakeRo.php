@@ -11,6 +11,7 @@ class FakeRo extends ResourceObject
 {
     public function __construct()
     {
+        // @see \Pj8\SentryModule\ResourceSpanFactory
         $this->uri = new Uri('dummy://foo/bar', []);
     }
 

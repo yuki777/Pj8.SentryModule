@@ -32,7 +32,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Pj8\\SentryModule\\": ["tests/"]
+            "Pj8\\SentryModule\\": ["tests/"],
+            "FakeApplication\\": "tests/Fake/FakeApplication/src/"
         }
     },
     "scripts" :{
