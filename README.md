@@ -28,11 +28,11 @@ composer require pj8/sentry-module
 ```
 APP_ENV="local" # local|development|staging|production
 SENTRY_DSN="https://xxx@xxx.ingest.sentry.io/xxx"
-SENTRY_SAMPLE_RATE=1.0
-SENTRY_SUNDAY_TRACES_RATE_DEFAULT=1.0
+SENTRY_ERROR_SAMPLE_RATE=1.0
+SENTRY_PERFORMANCE_SAMPLER_RATE=1.0
 ```
 
-- `var/conf/sentry.php` で利用設定
+- `var/conf/sentry.php` で利用して設定
 
 ```php
 <?php
@@ -66,6 +66,8 @@ return [
 ```php
 use BEAR\Package\AbstractAppModule;
 use Pj8\SentryModule\SentryModule;
+use BEAR\Sunday\Extension\Error\ErrorInterface;
+use Pj8\SentryModule\SentryErrorHandler;
 
 class ProdModule extends AbstractAppModule
 {
@@ -73,10 +75,10 @@ class ProdModule extends AbstractAppModule
     {
         // ...
         $this->install(new SentryModule(include $this->appMeta->appDir . '/var/conf/sentry.php'));
-        // Sentry のエラーキャプチャー機能を利用するための設定  ここから
+        // Sentry のエラーキャプチャー機能を利用する設定例  ここから
         $this->rename(ErrorInterface::class, 'original');
         $this->bind(ErrorInterface::class)->to(SentryErrorHandler::class);
-        // Sentry のエラーキャプチャー機能を利用するための設定  ここまで
+        // Sentry のエラーキャプチャー機能を利用する設定例  ここまで
     }
 }
 ```
@@ -89,9 +91,13 @@ class ProdModule extends AbstractAppModule
 
 ### モジュールインストールの注意事項
 
-SentryModule は、Sentry のエラーキャプチャー機能のために`\BEAR\Sunday\Extension\Error\ErrorInterface` と `\BEAR\Sunday\Extension\Error\ThrowableHandlerInterface`に対する前処理をはさみこみます。
+SentryModule は、Sentry のエラーキャプチャー機能のために
+`\BEAR\Sunday\Extension\Error\ErrorInterface` と `\BEAR\Sunday\Extension\Error\ThrowableHandlerInterface`に対する前処理をはさみこみます。
 
-プロジェクトで束縛確定されていたをエラーハンドラーをオリジナルインターフェイスとして保持し、
-前処理として Sentry のエラーキャプチャー処理を呼び出したらオリジナルインターフェイスに処理を委譲する処理フローです。
+プロジェクトで束縛されていたエラーハンドラーをオリジナルインターフェイスとして保持し、
+前処理として Sentry のエラーキャプチャー処理を呼び出してからオリジナルインターフェイスに処理を委譲する仕組みになっています。
+このため、コンテキストをデコレートする側のモジュール（ProdModule）にプロジェクト固有の束縛設定を上書きで書いてしまうと
+SentryModule のエラーキャプチャー機能は使えなくなるので注意してください。
 
-たとえば、アプリケーションコンテキストが `prod-html-app` であれば、最優先である ProdModule 内にエラーハンドリングの束縛を書けばエラーキャプチャー機能を確実に利用することができます。デコレートする側のモジュール（ProdModule）にプロジェクト固有の束縛設定を書くとエラーキャプチャー機能が使えないので注意してください。
+たとえば、アプリケーションコンテキストが `prod-html-app` であれば、最優先である ProdModule 内にエラーハンドリングの束縛を書けば
+エラーキャプチャー機能を確実に利用することができます。
