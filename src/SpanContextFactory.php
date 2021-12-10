@@ -15,9 +15,9 @@ final class SpanContextFactory implements SpanContextFactoryInterface
 {
     private ResourceSpanFactory $factory;
 
-    public function __construct(ResourceSpanFactory $title)
+    public function __construct(ResourceSpanFactory $factory)
     {
-        $this->factory = $title;
+        $this->factory = $factory;
     }
 
     public function __invoke(MethodInvocation $invocation): SpanContext
@@ -27,10 +27,10 @@ final class SpanContextFactory implements SpanContextFactoryInterface
             return ($this->factory)($invocation);
         }
 
-        return $this->getGenericTitle($invocation);
+        return $this->getGenericContext($invocation);
     }
 
-    private function getGenericTitle(MethodInvocation $invocation): SpanContext
+    private function getGenericContext(MethodInvocation $invocation): SpanContext
     {
         $spanContext = new SpanContext();
         $spanContext->setOp(sprintf(

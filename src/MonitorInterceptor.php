@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Pj8\SentryModule;
 
+use Ray\Aop\MethodInterceptor;
 use Ray\Aop\MethodInvocation;
 
-final class MonitorInterceptor implements MonitorInterceptorInteterface
+final class MonitorInterceptor implements MethodInterceptor, MonitorInterceptorInterface
 {
     private SpanInterface $span;
     private SpanContextFactoryInterface $factory;

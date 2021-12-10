@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Pj8\SentryModule;
 
-use Pj8\SentryModule\Transaction\TransactionInterface;
 use Sentry\Tracing\Span as TracingSpan;
 use Sentry\Tracing\SpanContext;
+use Sentry\Tracing\Transaction;
 
 use function array_pop;
+use function count;
 use function end;
 
 final class Span implements SpanInterface
 {
-    /** @var array<TracingSpan> */
+    /** @var array<(TracingSpan|mixed)> */
     private array $spans = [];
     private TransactionInterface $transaction;
 
@@ -27,32 +28,59 @@ final class Span implements SpanInterface
         unset($this->transaction);
     }
 
-    /**
-     * @param array<string, string|null> $config
-     */
     public function start(SpanContext $context): void
     {
-        $span = $this->getSpan();
+        $span = $this->getCurrentSpan();
+        if ($span === null) {
+            $span = $this->transaction->getTransaction();
+        }
+
         $this->spans[] = $span->startChild($context);
     }
 
     public function finish(): void
     {
+        if (count($this->spans) === 0) {
+            return;
+        }
+
         $span = array_pop($this->spans);
+        if (! $span) {
+            return;
+        }
+
         $span->finish();
     }
 
     /**
-     * @return TracingSpan|StartChildInterface
+     * @return TracingSpan|Transaction|null
      */
-    private function getSpan()
+    public function getCurrentSpan()
     {
         if ($this->spans) {
             return end($this->spans);
         }
 
-        $this->spans[] = $this->transaction;
+        return null;
+    }
 
-        return $this->transaction;
+    public function setCurrentSpan(?TracingSpan $span): void
+    {
+        if (count($this->spans) === 0) {
+            return;
+        }
+
+        $span = array_pop($this->spans);
+        if (! $span) {
+            return;
+        }
+
+        $this->spans[] = $span;
+    }
+
+    public function isFirst(): bool
+    {
+        // First Span (Transaction's child)
+        return count($this->spans) === 1;
     }
 }

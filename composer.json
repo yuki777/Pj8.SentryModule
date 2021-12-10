@@ -10,9 +10,11 @@
         }
     ],
     "require": {
+        "ext-json": "*",
         "php": "^7.4 || ^8.0",
         "bear/package": "^1.10",
         "bear/resource": "^1.15",
+        "bear/sunday": "^1.5.4",
         "ray/aop": "^2.10",
         "ray/di": "^2.12",
         "sentry/sdk": "^3.1",
