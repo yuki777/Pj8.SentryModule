@@ -8,6 +8,7 @@ use BEAR\Resource\ResourceObject;
 use InvalidArgumentException;
 use Pj8\SentryModule\Annotation\Monitorable;
 use Ray\Di\AbstractModule;
+use Ray\Di\Scope;
 
 use function array_key_exists;
 
@@ -37,7 +38,7 @@ class SentryModule extends AbstractModule
         $this->bind(CliNameBuilder::class);
         $this->bind(WebNameBuilder::class);
         $this->bind()->annotatedWith('sentry-tr-name')->toProvider(TransactionNameProvider::class);
-        $this->bind(TransactionInterface::class)->to(Transaction::class);
+        $this->bind(TransactionInterface::class)->to(Transaction::class)->in(Scope::SINGLETON);
         $this->bind(SpanInterface::class)->to(Span::class);
         $this->bind(SpanContextFactoryInterface::class)->to(SpanContextFactory::class);
         $this->bind(ResourceSpanFactory::class);
