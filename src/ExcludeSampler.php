@@ -27,7 +27,7 @@ final class ExcludeSampler implements TracesSamplerInterface
         $this->excludeNames = $excludeNames;
     }
 
-    public function sample(SamplingContext $context): float
+    public function __invoke(SamplingContext $context): float
     {
         $transactionContext = $context->getTransactionContext();
         if (! $transactionContext) {
