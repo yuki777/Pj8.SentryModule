@@ -32,7 +32,7 @@ SENTRY_ERROR_SAMPLE_RATE=1.0
 SENTRY_PERFORMANCE_SAMPLER_RATE=1.0
 ```
 
-- `var/conf/sentry.php` を設置
+- `var/conf/sentry.php` を配置して参照
 
 ```php
 <?php
@@ -48,17 +48,16 @@ return [
             (float) getenv('SENTRY_PERFORMANCE_SAMPLER_RATE'),
             ['/ignoreRequestUri.php']
         ),
-        'sample',
+        '__invoke',
     ],
 ];
 ```
-設定内容はそのまま `\Sentry\init()` の引数として利用されます。  
+設定内容はそのまま `\Sentry\init()` の引数として利用されます。
 
-参考  
-[sample_rate](https://docs.sentry.io/platforms/php/configuration/options/#sample-rate)  
-[traces_sample_rate](https://docs.sentry.io/platforms/php/configuration/options/#traces-sample-rate)  
-[traces_sampler](https://docs.sentry.io/platforms/php/configuration/options/#traces-sampler)  
-
+参考
+[sample_rate](https://docs.sentry.io/platforms/php/configuration/options/#sample-rate)
+[traces_sample_rate](https://docs.sentry.io/platforms/php/configuration/options/#traces-sample-rate)
+[traces_sampler](https://docs.sentry.io/platforms/php/configuration/options/#traces-sampler)
 
 - モジュールのインストール
 
@@ -91,5 +90,10 @@ SentryModule はエラーをキャプチャーするために以下のインタ�
 - `\BEAR\Sunday\Extension\Error\ErrorInterface`
 - `\BEAR\Sunday\Extension\Error\ThrowableHandlerInterface`
 
-そのため、既にプロジェクト独自のエラーハンドラーが束縛されている場合は SentryModule のエラーキャプチャー機能が動作しない場合があります。  
+そのため、既にプロジェクト独自のエラーハンドラーが束縛されている場合は SentryModule のエラーキャプチャー機能が動作しない場合があります。
 束縛の順序やコンテキストごとのモジュール設定など確認してください。
+
+## パフォーマンスモニタリング
+
+- パフォーマンスオプションを設定した場合、BEARリソースの処理時間が計測されます
+- `Monitorable` アノテーションを使うと任意の処理を計測することもできます

@@ -8,5 +8,5 @@ use Sentry\Tracing\SamplingContext;
 
 interface TracesSamplerInterface
 {
-    public function sample(SamplingContext $context): float;
+    public function __invoke(SamplingContext $context): float;
 }

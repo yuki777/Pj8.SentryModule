@@ -13,14 +13,14 @@ class ExcludeSamplerTest extends TestCase
     /**
      * @dataProvider getSampleExcludeData
      */
-    public function testSampleSamplingEqualsHealthCheck(string $excludeConf, string $transactionName): void
+    public function testInvokeSamplingEqualsHealthCheck(string $excludeConf, string $transactionName): void
     {
         $default = 0.5;
         $sampler = new ExcludeSampler($default, [$excludeConf]);
 
         $transactionContext = new TransactionContext($transactionName);
         $samplingContext = SamplingContext::getDefault($transactionContext);
-        $result = $sampler->sample($samplingContext);
+        $result = $sampler->__invoke($samplingContext);
 
         $this->assertNotSame($default, $result);
         $this->assertSame(0.0, $result);
@@ -29,13 +29,13 @@ class ExcludeSamplerTest extends TestCase
     /**
      * @dataProvider getSampleExcludeData
      */
-    public function testSampleReturnsFloatZeroCaseEnvKeyNotFound(): void
+    public function testInvokeReturnsFloatZeroCaseEnvKeyNotFound(): void
     {
         $sampler = new ExcludeSampler((float) false, []);
 
         $transactionContext = new TransactionContext('dummy');
         $samplingContext = SamplingContext::getDefault($transactionContext);
-        $result = $sampler->sample($samplingContext);
+        $result = $sampler->__invoke($samplingContext);
 
         $this->assertSame(0.0, $result);
     }
