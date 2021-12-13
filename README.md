@@ -6,7 +6,7 @@
 
 ## 機能
 
-* BEAR.Sunday アプリケーションでの Sentry PHP Sdk の設定
+* BEAR.Sunday アプリケーションでの [Sentry PHP SDK](https://github.com/getsentry/sentry-php) の設定
 * Sentry のエラー監視、パフォーマンスモニタリングへの統合を提供
 
 ## インストール
@@ -32,7 +32,7 @@ SENTRY_ERROR_SAMPLE_RATE=1.0
 SENTRY_PERFORMANCE_SAMPLER_RATE=1.0
 ```
 
-- `var/conf/sentry.php` の利用例  
+- `var/conf/sentry.php` を設置
 
 ```php
 <?php
@@ -43,11 +43,10 @@ return [
     'dsn' => getenv('SENTRY_DSN'),
     'environment' => getenv('APP_ENV'),
     'sample_rate' => (float) getenv('SENTRY_ERROR_SAMPLE_RATE'),
-    'traces_sample_rate' => (float) getenv('SENTRY_PERFORMANCE_SAMPLER_RATE'),
     'traces_sampler' => [
         new ExcludeSampler(
             (float) getenv('SENTRY_PERFORMANCE_SAMPLER_RATE'),
-            ['/ignore-path']
+            ['/ignoreRequestUri.php']
         ),
         'sample',
     ],
@@ -65,8 +64,8 @@ return [
 
 ```php
 use BEAR\Package\AbstractAppModule;
-use Pj8\SentryModule\SentryModule;
 use BEAR\Sunday\Extension\Error\ErrorInterface;
+use Pj8\SentryModule\SentryModule;
 use Pj8\SentryModule\SentryErrorHandler;
 
 class ProdModule extends AbstractAppModule
@@ -80,9 +79,14 @@ class ProdModule extends AbstractAppModule
 }
 ```
 
+### "dsn" 設定の注意事項
+
+Sentry の `dsn` が空または未定義の場合、全環境で Sentry が無効化されます。
+開発環境、テスト環境やCIビルド環境では Sentry へのイベント送信が不要であることがほとんどでしょうから無効化がのぞましいでしょう。
+
 ### モジュールインストールの注意事項
 
-SentryModule はエラーをキャプチャーするために以下のinterfaceの束縛を上書きします。  
+SentryModule はエラーをキャプチャーするために以下のインターフェイスの束縛を上書きします。
 
 - `\BEAR\Sunday\Extension\Error\ErrorInterface`
 - `\BEAR\Sunday\Extension\Error\ThrowableHandlerInterface`
