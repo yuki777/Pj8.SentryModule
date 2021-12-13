@@ -7,23 +7,23 @@
 ## 機能
 
 * BEAR.Sunday アプリケーションでの Sentry のセットアップ、設定
-* Sentry のエラー監視、パフォーマンスモニタリング機能に対応
+* Sentry のエラー監視、パフォーマンスモニタリングへの統合を提供
 
 ## インストール
 
-[Composer]([https://getcomposer.org/) でプロジェクトにインストールします。
+[Composer](https://getcomposer.org/) でプロジェクトにインストールします。
 
 ```bash
 composer require pj8/sentry-module
 ```
 
-## Step 2: モジュールを利用可能にする
+## Step 2: モジュールを利用可能に設定する
 
-モジュール `SentryModule` を [Sentry SDK](https://docs.sentry.io/platforms/php/configuration/) のオプション設定で初期化してインストールします。
+`SentryModule` を [Sentry SDK for PHP](https://github.com/getsentry/sentry-php) の [公式オプション設定](https://docs.sentry.io/platforms/php/configuration/) で初期化してインストールします。
 
-### 設定とインストールの例:
+### 設定の実装例
 
-- プロジェクトの開発環境用 [Sentry DSN](https://docs.sentry.io/quickstart/#configure-the-dsn) の値をプロジェクトの.env を設定
+- プロジェクト開発環境用 [Sentry DSN](https://docs.sentry.io/quickstart/#configure-the-dsn) の設定値をプロジェクトの.env に定義
 
 ```
 APP_ENV="local" # local|development|staging|production
@@ -32,7 +32,7 @@ SENTRY_ERROR_SAMPLE_RATE=1.0
 SENTRY_PERFORMANCE_SAMPLER_RATE=1.0
 ```
 
-- `var/conf/sentry.php` で利用して設定
+- `var/conf/sentry.php` で参照して設定
 
 ```php
 <?php
@@ -47,7 +47,7 @@ return [
     'sample_rate' => (float) getenv('SENTRY_ERROR_SAMPLE_RATE'),
     // パフォーマンス計測サンプリングを固定値にする場合
     // @see https://docs.sentry.io/platforms/php/configuration/options/#traces-sample-rate
-    //'traces_sample_rate' => (float) getenv('SENTRY_SAMPLE_RATE'),
+    //'traces_sample_rate' => (float) getenv('SENTRY_PERFORMANCE_SAMPLER_RATE'),
     // パフォーマンス計測サンプリングをPHPのコールバック関数で決める場合
     // @see https://docs.sentry.io/platforms/php/configuration/options/#traces-sampler
     'traces_sampler' => [
@@ -83,21 +83,21 @@ class ProdModule extends AbstractAppModule
 }
 ```
 
-### 設定の注意事項
+### "dsn" 設定の注意事項
 
-`dsn` 値が空または未定義の場合、全環境で Sentry が無効化されます。
+Sentry の `dsn` が空または未定義の場合、全環境で Sentry が無効化されます。
 ふだんの開発環境やテスト環境、CIビルド環境では Sentry へのイベント送信が不要であることがほとんどでしょうから無効化がのぞましいでしょう。
 不用意に有効化してしまうと料金プランのクオータを超過する恐れがあるので気をつけてください。
 
 ### モジュールインストールの注意事項
 
-SentryModule は、Sentry のエラーキャプチャー機能のために
-`\BEAR\Sunday\Extension\Error\ErrorInterface` と `\BEAR\Sunday\Extension\Error\ThrowableHandlerInterface`に対する前処理をはさみこみます。
+SentryModule は、Sentry のエラーキャプチャー機能のために [BEAR.Sunday](https://github.com/bearsunday/BEAR.Sunday) の
 
-プロジェクトで束縛されていたエラーハンドラーをオリジナルインターフェイスとして保持し、
-前処理として Sentry のエラーキャプチャー処理を呼び出してからオリジナルインターフェイスに処理を委譲する仕組みになっています。
-このため、コンテキストをデコレートする側のモジュール（ProdModule）にプロジェクト固有の束縛設定を上書きで書いてしまうと
-SentryModule のエラーキャプチャー機能は使えなくなるので注意してください。
+- `\BEAR\Sunday\Extension\Error\ErrorInterface` と
+- `\BEAR\Sunday\Extension\Error\ThrowableHandlerInterface`
 
-たとえば、アプリケーションコンテキストが `prod-html-app` であれば、最優先である ProdModule 内にエラーハンドリングの束縛を書けば
-エラーキャプチャー機能を確実に利用することができます。
+に対して前処理をはさみこみます。
+
+プロジェクトで束縛されていたエラーハンドラーをオリジナルインターフェイスとして保持し、前処理として Sentry のエラーキャプチャー処理を呼び出してからオリジナルインターフェイスに処理を委譲する仕組みです。
+このため、プロジェクトのエラーハンドラーが上書きで束縛されている場合は SentryModule のエラーキャプチャー機能が使えなくなってしまうので注意してください。
+確実にエラーキャプチャー機能を使いたければ、たとえば、アプリケーションコンテキストが `prod-html-app` であれば最優先である ProdModule 内でエラーハンドリングの束縛設定を行えば有効化できます。あるいは、`sentry-html-app` のようにアプリケーションのコンテキストモジュールを用意することでも利用は可能です。
