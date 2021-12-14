@@ -39,6 +39,8 @@
     "scripts" :{
         "test": ["./vendor/bin/phpunit"],
         "tests": ["@cs", "@test", "@sa"],
+        "coverage": ["php -dzend_extension=xdebug.so -dxdebug.mode=coverage ./vendor/bin/phpunit --coverage-text --coverage-html=build/coverage"],
+        "pcov": ["php -dextension=pcov.so -d pcov.enabled=1 ./vendor/bin/phpunit --coverage-text --coverage-html=build/coverage  --coverage-clover=coverage.xml"],
         "cs": ["phpcs --standard=./phpcs.xml src tests"],
         "cs-fix": ["./vendor/bin/phpcbf src tests"],
         "clean": ["./vendor/bin/phpstan clear-result-cache", "./vendor/bin/psalm --clear-cache"],
@@ -48,7 +50,7 @@
             "phpmd --exclude src/Annotation src text ./phpmd.xml"
         ],
         "phpmd": ["./vendor/bin/phpmd src text ./phpmd.xml"],
-        "build": ["@cs", "@sa"]
+        "build": ["@cs", "@sa", "@pcov"]
     },
     "config": {
         "sort-packages": true
