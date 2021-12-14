@@ -18,46 +18,58 @@ class ResourceInterceptorTest extends TestCase
     {
         $this->expectException(UnsupportedTypeException::class);
 
-        $interceptor = $this->createResourceTrace();
+        $interceptor = $this->createResourceInterceptor();
 
         $fixture = static function (): string {
             return 'callable but not ResourceObject';
         };
         $invocation = new ReflectiveMethodInvocation($fixture, '__invoke', [$interceptor]);
         $interceptor->invoke($invocation);
-
-        $this->unsetTrace();
     }
 
-    public function testInvokeReturnAppResourceCaseAppResource(): void
+    /**
+     * @runInSeparateProcess
+     */
+    public function testInvokeReturnsAppResourceCaseAppResource(): void
     {
         $injector = new Injector(new ResourceModule('FakeApplication'), __DIR__ . '/tmp');
 
         $resource = $injector->getInstance(ResourceInterface::class);
         $fakeAppRo = $resource->get('app://self/aaa');
 
-        $interceptor = $this->createResourceTrace();
+        $interceptor = $this->createResourceInterceptor();
 
         $invocation = new ReflectiveMethodInvocation($fakeAppRo, 'onGet', [$interceptor]);
         $fakeRoResult = $interceptor->invoke($invocation);
 
         $this->assertSame($fakeAppRo, $fakeRoResult);
-
-        $this->unsetTrace();
     }
 
-    private function createResourceTrace(): ResourceInterceptor
+    /**
+     * @runInSeparateProcess
+     */
+    public function testInvokeCallsTransactionCaseFirstSpan(): void
+    {
+        $injector = new Injector(new ResourceModule('FakeApplication'), __DIR__ . '/tmp');
+
+        $resource = $injector->getInstance(ResourceInterface::class);
+        $fakeAppRo = $resource->get('app://self/aaa');
+
+        $mockTrace = $this->createMock(ResourceTraceInterface::class);
+        $mockTrace->expects($this->once())->method('isFirstSpan')->willReturn(true);
+        $mockTrace->expects($this->once())->method('setTransactionBy')->with($fakeAppRo);
+        $interceptor = new ResourceInterceptor($mockTrace);
+
+        $invocation = new ReflectiveMethodInvocation($fakeAppRo, 'onGet', [$interceptor]);
+        $interceptor->invoke($invocation);
+    }
+
+    private function createResourceInterceptor(): ResourceInterceptor
     {
         $dryRun = ['dsn' => null];
         $this->transaction = new Transaction($dryRun, 'test-dummy');
         $this->trace = new ResourceTrace($this->transaction, new Span($this->transaction), new SpanContextFactory(new ResourceSpanFactory()));
 
         return new ResourceInterceptor($this->trace);
-    }
-
-    private function unsetTrace(): void
-    {
-        $this->transaction = null;
-        $this->trace = null;
     }
 }
