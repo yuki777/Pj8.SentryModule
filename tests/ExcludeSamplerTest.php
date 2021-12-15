@@ -48,7 +48,7 @@ class ExcludeSamplerTest extends TestCase
         return [
             [
                 '/healthcheck',
-                'https://foo.bar.xxx.aaa.com - /healthcheck',
+                'https://example.com - /healthcheck',
             ],
             [
                 'healthcheck',
