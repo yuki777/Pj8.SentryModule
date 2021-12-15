@@ -19,47 +19,7 @@ composer require pj8/sentry-module
 
 ## アプリケーションへの適用
 
-`SentryModule` のインストール
-
-### 設定例
-
-- 設定値を環境変数に定義
-
-```
-APP_ENV="local"
-SENTRY_DSN="https://xxx@xxx.ingest.sentry.io/xxx"
-SENTRY_ERROR_SAMPLE_RATE=1.0
-SENTRY_PERFORMANCE_SAMPLER_RATE=1.0
-```
-
-- `var/conf/sentry.php` を配置して参照
-
-```php
-<?php
-
-use Pj8\SentryModule\ExcludeSampler;
-
-return [
-    'dsn' => getenv('SENTRY_DSN'),
-    'environment' => getenv('APP_ENV'),
-    'sample_rate' => (float) getenv('SENTRY_ERROR_SAMPLE_RATE'),
-    'traces_sampler' => [
-        new ExcludeSampler(
-            (float) getenv('SENTRY_PERFORMANCE_SAMPLER_RATE'),
-            ['/ignoreRequestUri.php']
-        ),
-        '__invoke',
-    ],
-];
-```
-設定内容はそのまま `\Sentry\init()` の引数として利用されます。
-
-参考
-[sample_rate](https://docs.sentry.io/platforms/php/configuration/options/#sample-rate)
-[traces_sample_rate](https://docs.sentry.io/platforms/php/configuration/options/#traces-sample-rate)
-[traces_sampler](https://docs.sentry.io/platforms/php/configuration/options/#traces-sampler)
-
-- モジュールのインストール
+- モジュールインストール
 
 ```php
 use BEAR\Package\AbstractAppModule;
@@ -71,7 +31,7 @@ class ProdModule extends AbstractAppModule
 {
     protected function configure()
     {
-        $this->install(new SentryModule(include $this->appMeta->appDir . '/var/conf/sentry.php'));
+        $this->install(new SentryModule(['dsn' => 'https://xxx@xxx.sentry.io/xxx"']));
         $this->rename(ErrorInterface::class, 'original');
         $this->bind(ErrorInterface::class)->to(SentryErrorHandler::class);
     }
