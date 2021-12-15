@@ -63,6 +63,6 @@ public function foo()
 [BEAR.Resource](https://github.com/bearsunday/BEAR.Resource)のリソースリクエストを全てモニタリングします。
 
 ```php
-    $this->install(new SentryModule(['dsn' => 'https://secret@sentry.example.com/1']));
-    $this->install(new ResourceMonitorModule());
+$this->install(new SentryModule(['dsn' => 'https://secret@sentry.example.com/1']));
+$this->install(new ResourceMonitorModule());
 ```
