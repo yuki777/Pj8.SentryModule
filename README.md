@@ -33,7 +33,7 @@ class ProdModule extends AbstractAppModule
     protected function configure()
     {
         $this->install(new PackageProdModule());
-        $this->install(new SentryModule(['dsn' => 'https://xxx@xxx.sentry.io/xxx"']));
+        $this->install(new SentryModule(['dsn' => 'https://secret@sentry.example.com/1"']));
         $this->rename(ErrorInterface::class, 'original');
         $this->bind(ErrorInterface::class)->to(SentryErrorHandler::class);
     }
