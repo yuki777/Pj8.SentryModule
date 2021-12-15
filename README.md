@@ -23,6 +23,7 @@ composer require pj8/sentry-module
 
 ```php
 use BEAR\Package\AbstractAppModule;
+use BEAR\Package\Context\ProdModule as PackageProdModule;
 use BEAR\Sunday\Extension\Error\ErrorInterface;
 use Pj8\SentryModule\SentryModule;
 use Pj8\SentryModule\SentryErrorHandler;
@@ -31,6 +32,7 @@ class ProdModule extends AbstractAppModule
 {
     protected function configure()
     {
+        $this->install(new PackageProdModule());
         $this->install(new SentryModule(['dsn' => 'https://xxx@xxx.sentry.io/xxx"']));
         $this->rename(ErrorInterface::class, 'original');
         $this->bind(ErrorInterface::class)->to(SentryErrorHandler::class);
