@@ -24,9 +24,8 @@ composer require pj8/sentry-module
 ```php
 use BEAR\Package\AbstractAppModule;
 use BEAR\Package\Context\ProdModule as PackageProdModule;
-use BEAR\Sunday\Extension\Error\ErrorInterface;
 use Pj8\SentryModule\SentryModule;
-use Pj8\SentryModule\SentryErrorHandler;
+use Pj8\SentryModule\SentryErrorModule;
 
 class ProdModule extends AbstractAppModule
 {
@@ -34,8 +33,7 @@ class ProdModule extends AbstractAppModule
     {
         $this->install(new PackageProdModule());
         $this->install(new SentryModule(['dsn' => 'https://secret@sentry.example.com/1"']));
-        $this->rename(ErrorInterface::class, 'original');
-        $this->bind(ErrorInterface::class)->to(SentryErrorHandler::class);
+        $this->install(new SentryErrorModule($this));
     }
 }
 ```
