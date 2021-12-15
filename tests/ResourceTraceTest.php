@@ -9,7 +9,7 @@ use Sentry\Tracing\SpanContext;
 
 class ResourceTraceTest extends TestCase
 {
-    public function testStartWithDispatchSpanStart(): void
+    public function testStartDispatchSpanStart(): void
     {
         $dryRun = ['dsn' => null];
         $transaction = new Transaction($dryRun, 'dummy');
@@ -22,11 +22,11 @@ class ResourceTraceTest extends TestCase
 
         $stub = new FakeRo();
         $invocation = new ReflectiveMethodInvocation($stub, 'onGet', []);
-        $resourceTrace->startWith($invocation);
+        $resourceTrace->start($invocation);
         unset($transaction);
     }
 
-    public function testSetCurrentSpanByUpdateSpan(): void
+    public function testSetCurrentSpanUpdateSpan(): void
     {
         $transaction = $this->dryRunStart();
         $sentrySpan = $transaction->startChild(new SpanContext());
@@ -38,11 +38,11 @@ class ResourceTraceTest extends TestCase
         $factory = new SpanContextFactory(new ResourceSpanFactory());
 
         $resourceTrace = new ResourceTrace($transaction, $mockSpan, $factory);
-        $resourceTrace->setCurrentSpanBy(new FakeRo());
+        $resourceTrace->setCurrentSpan(new FakeRo());
         unset($transaction);
     }
 
-    public function testSetTransactionByUpdateTransaction(): void
+    public function testSetTransactionUpdateTransaction(): void
     {
         $transaction = $this->dryRunStart();
         $sentryTransaction = $transaction->getTransaction();
@@ -58,8 +58,8 @@ class ResourceTraceTest extends TestCase
         $resourceTrace = new ResourceTrace($mockTransaction, $span, $factory);
         $stub = new FakeRo();
         $invocation = new ReflectiveMethodInvocation($stub, 'onGet', []);
-        $resourceTrace->startWith($invocation);
-        $resourceTrace->setTransactionBy(new FakeRo());
+        $resourceTrace->start($invocation);
+        $resourceTrace->setTransaction(new FakeRo());
         unset($transaction);
     }
 

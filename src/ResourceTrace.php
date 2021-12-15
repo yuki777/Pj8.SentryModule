@@ -28,13 +28,13 @@ final class ResourceTrace implements ResourceTraceInterface
         $this->factory = $factory;
     }
 
-    public function startWith(MethodInvocation $invocation): void
+    public function start(MethodInvocation $invocation): void
     {
         $spanContext = ($this->factory)($invocation);
         $this->span->start($spanContext);
     }
 
-    public function setCurrentSpanBy(ResourceObject $result): void
+    public function setCurrentSpan(ResourceObject $result): void
     {
         $tracingSpan = $this->span->getCurrentSpan();
         if (! ($tracingSpan instanceof TracingSpan)) {
@@ -46,7 +46,7 @@ final class ResourceTrace implements ResourceTraceInterface
         $this->span->setCurrentSpan($tracingSpan);
     }
 
-    public function setTransactionBy(ResourceObject $result): void
+    public function setTransaction(ResourceObject $result): void
     {
         if (! $this->span->isFirst()) {
             return;
