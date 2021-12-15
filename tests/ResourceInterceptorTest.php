@@ -57,7 +57,7 @@ class ResourceInterceptorTest extends TestCase
 
         $mockTrace = $this->createMock(ResourceTraceInterface::class);
         $mockTrace->expects($this->once())->method('isFirstSpan')->willReturn(true);
-        $mockTrace->expects($this->once())->method('setTransactionBy')->with($fakeAppRo);
+        $mockTrace->expects($this->once())->method('setTransaction')->with($fakeAppRo);
         $interceptor = new ResourceInterceptor($mockTrace);
 
         $invocation = new ReflectiveMethodInvocation($fakeAppRo, 'onGet', [$interceptor]);

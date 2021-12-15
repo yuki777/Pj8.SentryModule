@@ -7,11 +7,11 @@ use Ray\Aop\MethodInvocation;
 
 interface ResourceTraceInterface
 {
-    public function startWith(MethodInvocation $invocation): void;
+    public function start(MethodInvocation $invocation): void;
 
-    public function setCurrentSpanBy(ResourceObject $result): void;
+    public function setCurrentSpan(ResourceObject $result): void;
 
-    public function setTransactionBy(ResourceObject $result): void;
+    public function setTransaction(ResourceObject $result): void;
 
     public function isFirstSpan(): bool;
 

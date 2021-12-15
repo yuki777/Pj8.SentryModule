@@ -28,18 +28,18 @@ final class ResourceInterceptor implements MethodInterceptor, MonitorInterceptor
             throw new UnsupportedTypeException();
         }
 
-        $this->trace->startWith($invocation);
+        $this->trace->start($invocation);
 
         $result = $invocation->proceed();
         if (! ($result instanceof ResourceObject)) {
             return $result;
         }
 
-        $this->trace->setCurrentSpanBy($result);
+        $this->trace->setCurrentSpan($result);
         // Embed のような遅延評価リソースではないエンドポイントリソースの場合
         if (self::$initialized === false && $this->trace->isFirstSpan()) {
             self::$initialized = true;
-            $this->trace->setTransactionBy($result);
+            $this->trace->setTransaction($result);
         }
 
         $this->trace->finish();
