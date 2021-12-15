@@ -35,7 +35,7 @@ class ResourceInterceptorTest extends TestCase
         $injector = new Injector(new ResourceModule('FakeApplication'), __DIR__ . '/tmp');
 
         $resource = $injector->getInstance(ResourceInterface::class);
-        $fakeAppRo = $resource->get('app://self/aaa');
+        $fakeAppRo = $resource->get('app://self/index');
 
         $interceptor = $this->createResourceInterceptor();
 
@@ -53,7 +53,7 @@ class ResourceInterceptorTest extends TestCase
         $injector = new Injector(new ResourceModule('FakeApplication'), __DIR__ . '/tmp');
 
         $resource = $injector->getInstance(ResourceInterface::class);
-        $fakeAppRo = $resource->get('app://self/aaa');
+        $fakeAppRo = $resource->get('app://self/index');
 
         $mockTrace = $this->createMock(ResourceTraceInterface::class);
         $mockTrace->expects($this->once())->method('isFirstSpan')->willReturn(true);

@@ -10,20 +10,20 @@ class CliNameBuilderTest extends TestCase
     {
         $builder = new CliNameBuilder();
         $fixture = [
-            'argv' => ['aaa.sh'],
+            'argv' => ['example.sh'],
         ];
         $name = $builder->buildBy($fixture);
-        $this->assertSame($name, 'cli - aaa.sh');
+        $this->assertSame($name, 'cli - example.sh');
     }
 
     public function testCliTransactionNameBuilderReturnsPathCaseNormal(): void
     {
         $builder = new CliNameBuilder();
         $fixture = [
-            'argv' => ['aaa.sh', 'get', '/abc/123'],
+            'argv' => ['example.sh', 'get', '/abc/123'],
         ];
         $name = $builder->buildBy($fixture);
-        $this->assertSame($name, 'cli - aaa.sh - get - /abc/123');
+        $this->assertSame($name, 'cli - example.sh - get - /abc/123');
     }
 
     public function testCliTransactionNameBuilderReturnsNameCaseNoArgv(): void

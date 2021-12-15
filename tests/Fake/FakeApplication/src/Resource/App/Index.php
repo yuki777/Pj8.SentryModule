@@ -6,9 +6,9 @@ namespace FakeApplication\Resource\App;
 
 use BEAR\Resource\ResourceObject;
 
-class Aaa extends ResourceObject
+class Index extends ResourceObject
 {
-    const RESULT = 'result by app Bar resource';
+    const RESULT = 'result by app resource';
 
     public function onGet(): ResourceObject
     {
