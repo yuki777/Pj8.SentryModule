@@ -17,9 +17,8 @@ composer require pj8/sentry-module
 ```php
 use BEAR\Package\AbstractAppModule;
 use BEAR\Package\Context\ProdModule as PackageProdModule;
-use BEAR\Sunday\Extension\Error\ErrorInterface;
 use Pj8\SentryModule\SentryModule;
-use Pj8\SentryModule\SentryErrorHandler;
+use Pj8\SentryModule\SentryErrorModule;
 
 class ProdModule extends AbstractAppModule
 {
@@ -29,7 +28,7 @@ class ProdModule extends AbstractAppModule
         $this->install(new PackageProdModule());
         // PackageProdModuleの後にSentryModuleをインストール
         $this->install(new SentryModule([
-            'dsn' => 'https://secret@sentry.example.com/1"'
+            'dsn' => 'https://secret@sentry.example.com/1'
         ])
         $this->install(new SentryErrorModule($this));
     }
