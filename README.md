@@ -27,7 +27,7 @@ class ProdModule extends AbstractAppModule
     {
         // ...
         $this->install(new PackageProdModule());
-        // PackageProdModuleの後にSentryModule記述します。
+        // PackageProdModuleの後にSentryModuleをインストール
         $this->install(new SentryModule([
             'dsn' => 'https://secret@sentry.example.com/1"'
         ])

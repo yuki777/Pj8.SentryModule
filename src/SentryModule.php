@@ -23,6 +23,7 @@ class SentryModule extends AbstractModule
      * @param array<string, ?string> $config Sentry SDK 初期化オプション
      *
      * @see https://docs.sentry.io/platforms/php/configuration/options/
+     * @see Sentry::Init()
      */
     public function __construct(array $config)
     {
