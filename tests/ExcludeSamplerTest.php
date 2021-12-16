@@ -13,7 +13,7 @@ class ExcludeSamplerTest extends TestCase
     /**
      * @dataProvider getSampleExcludeData
      */
-    public function testInvokeSamplingEqualsHealthCheck(string $excludeConf, string $transactionName): void
+    public function testInvokeSamplingCaseExcludePath(string $excludeConf, string $transactionName): void
     {
         $default = 0.5;
         $sampler = new ExcludeSampler($default, [$excludeConf]);
@@ -24,6 +24,20 @@ class ExcludeSamplerTest extends TestCase
 
         $this->assertNotSame($default, $result);
         $this->assertSame(0.0, $result);
+    }
+
+    public function testInvokeNotSamplingCaseNotExcludePath(): void
+    {
+        $default = 0.5;
+        $excludeConf = ['/foo'];
+        $transactionName = '/bar';
+        $sampler = new ExcludeSampler($default, $excludeConf);
+
+        $transactionContext = new TransactionContext($transactionName);
+        $samplingContext = SamplingContext::getDefault($transactionContext);
+        $result = $sampler->__invoke($samplingContext);
+
+        $this->assertSame($default, $result);
     }
 
     /**
@@ -57,6 +71,10 @@ class ExcludeSamplerTest extends TestCase
             [
                 'healthcheck',
                 '/healthCheck',
+            ],
+            [
+                'bear.compile.php',
+                'cli - /path/to/bear.compile.php - foo - bar',
             ],
         ];
     }
