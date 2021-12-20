@@ -43,7 +43,6 @@ final class ResourceTrace implements ResourceTraceInterface
 
         /** @psalm-suppress StaticAccess */
         $tracingSpan->setStatus(SpanStatus::createFromHttpStatusCode($result->code));
-        $this->span->setCurrentSpan($tracingSpan);
     }
 
     public function setTransaction(ResourceObject $result): void
@@ -55,7 +54,6 @@ final class ResourceTrace implements ResourceTraceInterface
         $tracingTran = $this->transaction->getTransaction();
         /** @psalm-suppress StaticAccess */
         $tracingTran->setStatus(SpanStatus::createFromHttpStatusCode($result->code));
-        $this->transaction->setTransaction($tracingTran);
     }
 
     public function isFirstSpan(): bool

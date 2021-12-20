@@ -18,7 +18,5 @@ interface SpanInterface
      */
     public function getCurrentSpan();
 
-    public function setCurrentSpan(?TracingSpan $span): void;
-
     public function isFirst(): bool;
 }

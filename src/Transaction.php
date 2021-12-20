@@ -63,9 +63,4 @@ final class Transaction implements TransactionInterface
     {
         return $this->transaction;
     }
-
-    public function setTransaction(SentryTransaction $transaction): void
-    {
-        $this->transaction = $transaction;
-    }
 }
