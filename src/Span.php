@@ -64,20 +64,6 @@ final class Span implements SpanInterface
         return null;
     }
 
-    public function setCurrentSpan(?TracingSpan $span): void
-    {
-        if (count($this->spans) === 0) {
-            return;
-        }
-
-        $span = array_pop($this->spans);
-        if (! $span) {
-            return;
-        }
-
-        $this->spans[] = $span;
-    }
-
     public function isFirst(): bool
     {
         // First Span (Transaction's child)

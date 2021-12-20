@@ -33,7 +33,6 @@ class ResourceTraceTest extends TestCase
 
         $mockSpan = $this->createMock(SpanInterface::class);
         $mockSpan->expects($this->once())->method('getCurrentSpan')->willReturn($sentrySpan);
-        $mockSpan->expects($this->once())->method('setCurrentSpan');
 
         $factory = new SpanContextFactory(new ResourceSpanFactory());
 
@@ -49,7 +48,6 @@ class ResourceTraceTest extends TestCase
 
         $mockTransaction = $this->createMock(TransactionInterface::class);
         $mockTransaction->expects($this->once())->method('getTransaction')->willReturn($sentryTransaction);
-        $mockTransaction->expects($this->once())->method('setTransaction');
 
         $span = new Span(new Transaction(['dsn' => null], 'test-dummy'));
 
