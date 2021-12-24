@@ -11,10 +11,16 @@ use PHPUnit\Framework\TestCase;
 use Ray\Di\Injector;
 use RuntimeException;
 
+use function ini_set;
 use function Sentry\init;
 
 class SentryThrowableHandlerTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        ini_set('error_log', '/dev/null');
+    }
+
     public function testHandleDispatchOriginal(): void
     {
         $dryRun = ['dsn' => null];

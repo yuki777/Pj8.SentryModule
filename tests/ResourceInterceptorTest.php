@@ -27,27 +27,6 @@ class ResourceInterceptorTest extends TestCase
         $interceptor->invoke($invocation);
     }
 
-    /**
-     * @runInSeparateProcess
-     */
-    public function testInvokeReturnsAppResourceCaseAppResource(): void
-    {
-        $injector = new Injector(new ResourceModule('FakeApplication'), __DIR__ . '/tmp');
-
-        $resource = $injector->getInstance(ResourceInterface::class);
-        $fakeAppRo = $resource->get('app://self/index');
-
-        $interceptor = $this->createResourceInterceptor();
-
-        $invocation = new ReflectiveMethodInvocation($fakeAppRo, 'onGet', [$interceptor]);
-        $fakeRoResult = $interceptor->invoke($invocation);
-
-        $this->assertSame($fakeAppRo, $fakeRoResult);
-    }
-
-    /**
-     * @runInSeparateProcess
-     */
     public function testInvokeCallsTransactionCaseFirstSpan(): void
     {
         $injector = new Injector(new ResourceModule('FakeApplication'), __DIR__ . '/tmp');
@@ -62,6 +41,21 @@ class ResourceInterceptorTest extends TestCase
 
         $invocation = new ReflectiveMethodInvocation($fakeAppRo, 'onGet', [$interceptor]);
         $interceptor->invoke($invocation);
+    }
+
+    public function testInvokeReturnsAppResourceCaseAppResource(): void
+    {
+        $injector = new Injector(new ResourceModule('FakeApplication'), __DIR__ . '/tmp');
+
+        $resource = $injector->getInstance(ResourceInterface::class);
+        $fakeAppRo = $resource->get('app://self/index');
+
+        $interceptor = $this->createResourceInterceptor();
+
+        $invocation = new ReflectiveMethodInvocation($fakeAppRo, 'onGet', [$interceptor]);
+        $fakeRoResult = $interceptor->invoke($invocation);
+
+        $this->assertSame($fakeAppRo, $fakeRoResult);
     }
 
     private function createResourceInterceptor(): ResourceInterceptor
