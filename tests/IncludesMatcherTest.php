@@ -27,7 +27,7 @@ class IncludesMatcherTest extends TestCase
     }
 
     /**
-     * @return mixed[][]
+     * @return ReflectionMethod[][]
      */
     public function getHttpMethodData(): array
     {
@@ -40,7 +40,7 @@ class IncludesMatcherTest extends TestCase
     }
 
     /**
-     * @return mixed[][]
+     * @return ReflectionMethod[][]
      */
     public function getUnrelatedMethodData(): array
     {
