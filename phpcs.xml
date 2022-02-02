@@ -34,7 +34,6 @@
         <exclude-pattern>*/tmp/*</exclude-pattern>
 
         <!-- level 2: 自動修正 Riskyルール -->
-        <!-- <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>　-->
         <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing"/>
         <exclude name="SlevomatCodingStandard.PHP.RequireExplicitAssertion.RequiredExplicitAssertion"/>
         <exclude-pattern>*/tests/Fake/*</exclude-pattern>
@@ -64,6 +63,9 @@
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
         <include-pattern>src/*</include-pattern>
         <include-pattern>tests/*</include-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>src/IncludesMatcher.php</exclude-pattern>
     </rule>
     <rule ref="SlevomatCodingStandard.Classes.PropertySpacing">
         <properties>

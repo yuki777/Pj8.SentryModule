@@ -55,7 +55,7 @@ class ExcludeSamplerTest extends TestCase
     }
 
     /**
-     * @return mixed[][]
+     * @return string[][]
      */
     public function getSampleExcludeData(): array
     {
