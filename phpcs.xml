@@ -2,7 +2,7 @@
 <ruleset
         name="Pj8.SentryModule"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd"
+        xsi:noNamespaceSchemaLocation="./vendor-bin/tools/vendor/squizlabs/php_codesniffer/phpcs.xsd"
 >
     <description>Coding Standard</description>
     <arg name="basepath" value="."/>
@@ -23,7 +23,7 @@
     <rule ref="PSR12"/>
 
     <!-- Doctrine Coding Standard -->
-    <rule ref="./vendor/doctrine/coding-standard/lib/Doctrine/ruleset.xml">
+    <rule ref="Doctrine">
         <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSame"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming.SuperfluousPrefix"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming.SuperfluousSuffix"/>
