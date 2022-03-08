@@ -11,7 +11,7 @@
     },
     "prConcurrentLimit": 4,
     "prHourlyLimit": 2,
-    "rangeStrategy": "bump",
+    "rangeStrategy": "replace",
     "dependencyDashboard": true,
     "packageRules": [
         {
@@ -21,6 +21,7 @@
             "groupName": "Composer dependencies",
             "groupSlug": "composer-dependencies",
             "labels": ["renovate", "dependencies"],
+            "automerge": false,
             "excludePackagePrefixes": ["bear", "ray"]
         }
     ]
