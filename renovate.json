@@ -4,14 +4,14 @@
         "config:base"
     ],
     "timezone": "Asia/Tokyo",
-    "schedule": ["after 10am on Monday"],
+    "schedule": ["after 10am on Monday", "before 11am on Monday"],
     "labels": ["renovate", "dependencies"],
     "lockFileMaintenance": {
         "enabled": false
     },
     "prConcurrentLimit": 4,
     "prHourlyLimit": 2,
-    "rangeStrategy": "replace",
+    "rangeStrategy": "bump",
     "dependencyDashboard": true,
     "packageRules": [
         {
@@ -22,7 +22,7 @@
             "groupSlug": "composer-dependencies",
             "labels": ["renovate", "dependencies"],
             "automerge": false,
-            "excludePackagePrefixes": ["bear", "ray"]
+            "excludePackageNames": ["bear/package", "bear/resource", "bear/sunday", "ray/aop", "ray/di"]
         }
     ]
 }
