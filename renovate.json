@@ -1,0 +1,29 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:base"
+    ],
+    "timezone": "Asia/Tokyo",
+    "schedule": ["after 10am on Monday", "before 11am on Monday"],
+    "labels": ["renovate", "dependencies"],
+    "lockFileMaintenance": {
+        "enabled": false
+    },
+    "prConcurrentLimit": 4,
+    "prHourlyLimit": 2,
+    "rangeStrategy": "bump",
+    "dependencyDashboard": true,
+    "ignorePaths": ["vendor-bin"],
+    "ignoreDeps": ["bear/package", "bear/resource", "bear/sunday", "ray/aop", "ray/di"],
+    "packageRules": [
+        {
+            "matchManagers": ["composer"],
+            "matchUpdateTypes": ["patch", "minor", "major"],
+            "matchDepTypes": ["require", "require-dev"],
+            "groupName": "Composer dependencies",
+            "groupSlug": "composer-dependencies",
+            "labels": ["renovate", "dependencies"],
+            "automerge": false
+        }
+    ]
+}
