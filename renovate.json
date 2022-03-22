@@ -13,6 +13,8 @@
     "prHourlyLimit": 2,
     "rangeStrategy": "bump",
     "dependencyDashboard": true,
+    "ignorePaths": ["vendor-bin"],
+    "ignoreDeps": ["bear/package", "bear/resource", "bear/sunday", "ray/aop", "ray/di"],
     "packageRules": [
         {
             "matchManagers": ["composer"],
@@ -21,8 +23,7 @@
             "groupName": "Composer dependencies",
             "groupSlug": "composer-dependencies",
             "labels": ["renovate", "dependencies"],
-            "automerge": false,
-            "excludePackageNames": ["bear/package", "bear/resource", "bear/sunday", "ray/aop", "ray/di"]
+            "automerge": false
         }
     ]
 }
