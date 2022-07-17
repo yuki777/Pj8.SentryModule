@@ -2,11 +2,12 @@ name: Continuous Integration
 
 on:
   push:
+    paths-ignore:
+      - '**.md'
   pull_request:
   workflow_dispatch:
   schedule:
     - cron: '42 15 * * *'
-
 jobs:
   phpunit:
     name: PHPUnit
