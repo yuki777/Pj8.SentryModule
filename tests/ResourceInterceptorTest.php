@@ -9,10 +9,40 @@ use Pj8\SentryModule\Exception\UnsupportedTypeException;
 use Ray\Aop\ReflectiveMethodInvocation;
 use Ray\Di\Injector;
 
+use function dirname;
+use function restore_error_handler;
+use function set_error_handler;
+use function str_contains;
+
+use const E_DEPRECATED;
+use const PHP_VERSION_ID;
+
 class ResourceInterceptorTest extends TestCase
 {
     private ?Transaction $transaction;
     private ?ResourceTrace $trace;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        if (PHP_VERSION_ID < 80100) {
+            return;
+        }
+
+        // Ray.Di 2.13.0後方互換のため refs. https://github.com/ray-di/Ray.Di/releases/tag/2.13.1
+        set_error_handler([$this, 'ignoreRayDiDeprecatedError']);
+    }
+
+    private function ignoreRayDiDeprecatedError(int $errno, string $s, string $file): bool
+    {
+        return $errno === E_DEPRECATED && str_contains($file, dirname(__DIR__) . '/vendor/ray/di');
+    }
+
+    protected function tearDown(): void
+    {
+        restore_error_handler();
+        parent::tearDown();
+    }
 
     public function testInvokeThrowsExceptionCaseNotResource(): void
     {

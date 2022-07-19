@@ -2,11 +2,12 @@ name: Continuous Integration
 
 on:
   push:
+    paths-ignore:
+      - '**.md'
   pull_request:
   workflow_dispatch:
   schedule:
     - cron: '42 15 * * *'
-
 jobs:
   phpunit:
     name: PHPUnit
@@ -18,6 +19,7 @@ jobs:
         php-version:
           - '7.4'
           - '8.0'
+          - '8.1'
         dependencies:
           - lowest
           - highest
