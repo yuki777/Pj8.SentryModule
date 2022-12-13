@@ -1,5 +1,5 @@
 {
-    "name": "pj8/sentry-module",
+    "name": "yuki777/sentry-module",
     "type": "library",
     "description": "BEAR.Sunday integration for Sentry (https://docs.sentry.io/platforms/php/)",
     "keywords": ["BEAR.Sunday", "Ray.Di","sentry"],
